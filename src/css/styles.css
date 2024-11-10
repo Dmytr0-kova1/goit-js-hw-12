@@ -25,6 +25,7 @@ a {
 
 button {
   cursor: pointer;
+  border: none;
 }
 
 img {
@@ -36,6 +37,19 @@ img {
 body {
   font-family: 'Montserrat', sans-serif;
   color: #fff;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  white-space: nowrap;
+  clip-path: inset(100%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
 }
 
 .form-search {
@@ -64,7 +78,6 @@ body {
 }
 
 .btn-query {
-  border: none;
   border-radius: 8px;
   padding: 8px 16px;
   background-color: #4e75ff;
@@ -89,8 +102,8 @@ body {
 }
 
 .gallery {
+  flex-basis: calc((100% - 24px * 2) / 3);
   border: 1px solid #808080;
-  width: 360px;
 }
 
 .list-item {
@@ -127,6 +140,25 @@ body {
   height: 50px;
   animation: spin 2s linear infinite;
   margin: 0 auto;
+}
+
+.container-btn {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-load-more {
+  margin-top: 32px;
+  border-radius: 8px;
+  padding: 8px 16px;
+  min-width: 125px;
+  min-height: 40px;
+  background-color: #4e75ff;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 150%;
+  letter-spacing: 0.04em;
+  color: #fff;
 }
 
 @keyframes spin {
