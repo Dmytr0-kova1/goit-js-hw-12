@@ -104,7 +104,6 @@ body {
 .gallery {
   border: 1px solid #808080;
   width: 360px;
-  flex-basis: calc((100% - 24px * 3) / 4);
 }
 
 .list-item {
