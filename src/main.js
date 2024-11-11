@@ -11,21 +11,21 @@ const loader = document.querySelector(".loader");
 const loadMore = document.querySelector(".btn-load-more")
 
 form.addEventListener("submit", querySearch);
-loadMore.addEventListener("click", onLoadMore);
+loadMore.addEventListener("click", () => onLoadMore(form.elements.query.value.trim()));
 
 let lightbox;
-let currentPage = 1;
+let page = 1;
 const perPage = 15;
-const inputVal = "";
 
-function querySearch(event) {
+async function querySearch(event) {
     event.preventDefault();
+    page = 1;
     loader.style.display = "block";
-    const inputVal = event.target.elements.query.value.trim();
-    currentPage = 1;
     gallery.innerHTML = "";
+    const query = event.target.elements.query.value.trim();
+    loadMore.classList.add("visually-hidden");
 
-    if (inputVal === "") {
+    if (query === "") {
           iziToast.show({
             title: "Error",
             message:  "Sorry, you need to enter data for the request. Please try again!",
@@ -36,19 +36,19 @@ function querySearch(event) {
         return;
     }
 
-    fetchData(inputVal)
-        .then((response) => {
-            if (response.hits.length === 0) {
+    await fetchData(query, page, perPage)
+        .then(({ hits }) => {
+            if (hits.length === 0) {
+                loadMore.classList.add("visually-hidden");
+
                 iziToast.show({
-            title: "Error",
             message:  "Sorry, there are no images matching your search query. Please try again!",
             position: "topRight",
             color: "red"
                 })
-                return;
             }
             
-            gallery.innerHTML = createMarkup(response.hits);
+            gallery.insertAdjacentHTML("beforeend", createMarkup(hits));
             loader.style.display = "none";
             loadMore.classList.remove("visually-hidden");
 
@@ -70,19 +70,18 @@ function querySearch(event) {
         })
 }
 
-async function onLoadMore() {
-    currentPage++;
-    loadMore.disabled = true;
-    loadMore.style.display = "none";
+async function onLoadMore(query) {
+    page++;
+    loadMore.classList.add("visually-hidden");
     loader.style.display = "block";
 
     try {
-        const data = await fetchData(inputVal, currentPage);
-        gallery.insertAdjacentHTML("beforeend", createMarkup(data.hits));
+        const { hits, totalHits } = await fetchData(query, page, perPage);
+        gallery.insertAdjacentHTML("beforeend", createMarkup(hits));
+        loadMore.classList.remove("visually-hidden");
 
-       let totalPages = Math.ceil(data.totalHits / perPage);
 
-        if (data.hits.length === 0 || currentPage >= totalPages) {
+        if (page * perPage >= totalHits) {
             loadMore.classList.add("visually-hidden");
             iziToast.show({
                 message: "We're sorry, but you've reached the end of search results.",
@@ -102,8 +101,6 @@ async function onLoadMore() {
         console.log(error);
     } finally {
         loader.style.display = "none";
-        loadMore.style.display = "block";
-        loadMore.disabled = false;
     }
 }
 
