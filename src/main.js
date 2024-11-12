@@ -38,14 +38,18 @@ async function querySearch(event) {
 
     await fetchData(query, page, perPage)
         .then(({ hits }) => {
-            if (hits.length === 0) {
-                loadMore.classList.add("visually-hidden");
+            if (hits.length === 0 || hits.length < perPage) {
+                // loadMore.style.display = "none";
 
                 iziToast.show({
             message:  "Sorry, there are no images matching your search query. Please try again!",
             position: "topRight",
             color: "red"
                 })
+
+            loader.style.display = "none";
+            loadMore.classList.add("visually-hidden");
+                return;
             }
             
             gallery.insertAdjacentHTML("beforeend", createMarkup(hits));
@@ -60,6 +64,7 @@ async function querySearch(event) {
         })
         .catch(error => {
             console.log(error);
+            
 
             iziToast.show({
                 title: "Error",
@@ -78,8 +83,13 @@ async function onLoadMore(query) {
     try {
         const { hits, totalHits } = await fetchData(query, page, perPage);
         gallery.insertAdjacentHTML("beforeend", createMarkup(hits));
-        loadMore.classList.remove("visually-hidden");
 
+        if (lightbox) {
+            lightbox.destroy();
+        }
+        lightbox = new SimpleLightbox(".gallery a");
+
+        loadMore.classList.remove("visually-hidden");
 
         if (page * perPage >= totalHits) {
             loadMore.classList.add("visually-hidden");
