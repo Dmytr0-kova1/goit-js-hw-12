@@ -38,9 +38,7 @@ async function querySearch(event) {
 
     await fetchData(query, page, perPage)
         .then(({ hits }) => {
-            if (hits.length === 0 || hits.length < perPage) {
-                // loadMore.style.display = "none";
-
+            if (hits.length === 0) {
                 iziToast.show({
             message:  "Sorry, there are no images matching your search query. Please try again!",
             position: "topRight",
@@ -48,13 +46,18 @@ async function querySearch(event) {
                 })
 
             loader.style.display = "none";
-            loadMore.classList.add("visually-hidden");
                 return;
             }
             
             gallery.insertAdjacentHTML("beforeend", createMarkup(hits));
             loader.style.display = "none";
             loadMore.classList.remove("visually-hidden");
+
+            if (hits.length < perPage) {
+                loadMore.classList.add("visually-hidden");
+            } else {
+                loadMore.classList.remove("visually-hidden");
+            }
 
             if (lightbox) {
                 lightbox.refresh();
