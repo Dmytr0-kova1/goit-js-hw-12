@@ -67,14 +67,6 @@ async function querySearch(event) {
         })
         .catch(error => {
             console.log(error);
-            
-
-            iziToast.show({
-                title: "Error",
-                message:  "Sorry, there are no images matching your search query. Please try again!",
-                position: "topRight",
-                color: "red"
-            })
         })
 }
 
